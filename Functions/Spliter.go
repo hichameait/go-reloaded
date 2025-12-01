@@ -23,9 +23,8 @@ func Spliter(str string) []string  {
 	textcopy := ""
 	var Str []string
 	r := []rune(str)
-	i := 0
 	flage := false
-	for i = 0; i < len(r)-1; i++ {
+	for i := 0; i < len(r); i++ {
 
 		switch r[i] {
 		case '(':
@@ -62,15 +61,10 @@ func Spliter(str string) []string  {
 			}
 		}
 	}
-	if i < len(r) {
-
-		textcopy += string(r[i])
-		if textcopy != "" {
-			// Str = append(Str, textcopy)
-			Str = append(Str, strings.TrimSpace(textcopy))
-			textcopy = ""
-
-		}
+	
+	if len(textcopy) > 0 {
+		Str = append(Str, strings.TrimSpace(textcopy))
+		textcopy = ""
 	}
 
 	return Str

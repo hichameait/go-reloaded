@@ -27,7 +27,7 @@ func FilterTow(NewStr []string) []string {
 			if err != nil {
 				continue
 			} else {
-				if num >= len(NewStr) {
+				if num >= len(NewStr[:i]) {
 					num = len(NewStr[:i])
 				}
 				str := "(cap, " + Num + ")"
@@ -65,13 +65,10 @@ func FilterTow(NewStr []string) []string {
 			if err != nil {
 				continue
 			} else {
-				if num >= len(NewStr) {
+				if num >= len(NewStr[:i]) {
 					num = len(NewStr[:i])
 				}
 				if NewStr[i] == str && i > 0 {
-					if num > len(NewStr) {
-						num = len(NewStr[:i])
-					}
 					for d := 1; d <= num; d++ {
 						if len(NewStr[i-d]) == 0 {
 							continue
@@ -91,7 +88,7 @@ func FilterTow(NewStr []string) []string {
 			if err != nil {
 				continue
 			} else {
-				if num >= len(NewStr) {
+				if num >= len(NewStr[:i]) {
 					num = len(NewStr[:i])
 				}
 				if NewStr[i] == str && i > 0 {

@@ -37,19 +37,22 @@ func IsAlpha(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 
+var reMultiSpace = regexp.MustCompile(`[ ]{2,}`)
+
 func CleanQuotes(s string) string {
 	runes := []rune(s)
-	sb := ""
+	var sb strings.Builder
 	n := len(runes)
 	seps := ".!,?;:"
+
 	for i := 0; i < n; i++ {
 		r := runes[i]
 		if r != '\'' {
-			sb += string(r)
+			sb.WriteRune(r)
 			continue
 		}
 		if i > 0 && i < n-1 && IsAlpha(runes[i-1]) && IsAlpha(runes[i+1]) {
-			sb += "'"
+			sb.WriteRune('\'')
 			continue
 		}
 		j := i + 1
@@ -57,35 +60,40 @@ func CleanQuotes(s string) string {
 			j++
 		}
 		if j == n {
-			sb += "'"
+			sb.WriteRune('\'')
 			continue
 		}
 
 		inner := strings.TrimSpace(string(runes[i+1 : j]))
-		sb += " '" + inner + "' "
+		if sb.Len() > 0 && !strings.HasSuffix(sb.String(), " ") {
+			sb.WriteRune(' ')
+		}
+		sb.WriteString("'" + inner + "'")
+		if j+1 < n && runes[j+1] != ' ' && !strings.ContainsRune(seps, runes[j+1]) {
+			sb.WriteRune(' ')
+		}
 		i = j
 	}
-	re3 := regexp.MustCompile(`[ ]{2,}`)
-	str := []rune(re3.ReplaceAllString(sb, " "))
 
-	output := ""
+	str := []rune(reMultiSpace.ReplaceAllString(sb.String(), " "))
+
+	var output strings.Builder
 	inQuote := false
 	for i := 0; i < len(str); i++ {
 		if str[i] == '\'' {
 			inQuote = !inQuote
-			output += string(str[i])
+			output.WriteRune(str[i])
 			continue
 		}
 		if !inQuote &&
-			len(output) != 0 &&
+			output.Len() != 0 &&
 			str[i] == ' ' &&
 			i+1 < len(str) &&
-			strings.Contains(seps, string(str[i+1])) {
+			strings.ContainsRune(seps, str[i+1]) {
 			continue
-		} else {
-			output += string(str[i])
 		}
+		output.WriteRune(str[i])
 	}
 
-	return output
+	return strings.TrimSpace(output.String())
 }
