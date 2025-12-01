@@ -1,7 +1,6 @@
 package functions
 
 import (
-	// "fmt"
 	"strings"
 )
 
@@ -12,7 +11,6 @@ func Lines(line string) string {
 	last := Vowel(words)
 	last = CleanSymbols(last)
 	last = CleanQuotes(last)
-	// fmt.Println(last)
 	if strings.Contains(last, " , ") {
 		last = CleanSymbols(last)
 		last = CleanQuotes(last)

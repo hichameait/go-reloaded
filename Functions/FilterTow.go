@@ -1,8 +1,6 @@
 package functions
 
 import (
-	// "fmt"
-
 	"strconv"
 	"strings"
 	"unicode"

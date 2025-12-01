@@ -33,31 +33,6 @@ func CleanSymbols(laststr string) string {
 	return str
 }
 
-// func CleanQuotes(laststr string) string {
-
-//     runes := []rune(laststr)
-//     temp := ""
-
-//     for i := 0; i < len(runes); i++ {
-//         ch := runes[i]
-//         if ch != '\'' {
-//             temp += string(ch)
-//             continue
-//         }
-//         if i+1 < len(runes) && runes[i+1] != ' ' {
-//             temp += string(ch)
-//         } else if i-1 >= 0 && runes[i-1] != ' ' {
-//             temp += string(ch)
-//         } else {
-//             temp += string(ch)
-//             i++
-//         }
-//     }
-//     re3 := regexp.MustCompile(`[ ]{2,}`)
-//     return re3.ReplaceAllString(temp, " ")
-
-// }
-
 func IsAlpha(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r)
 }
@@ -90,10 +65,8 @@ func CleanQuotes(s string) string {
 		sb += " '" + inner + "' "
 		i = j
 	}
-	
 	re3 := regexp.MustCompile(`[ ]{2,}`)
 	str := []rune(re3.ReplaceAllString(sb, " "))
-	
 
 	output := ""
 	inQuote := false
@@ -109,9 +82,10 @@ func CleanQuotes(s string) string {
 			i+1 < len(str) &&
 			strings.Contains(seps, string(str[i+1])) {
 			continue
-		}else{
+		} else {
 			output += string(str[i])
 		}
 	}
+
 	return output
 }

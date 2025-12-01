@@ -27,9 +27,6 @@ func Runner() {
 		char := string(r)
 		if char == "\n" {
 			processed := Lines(Line)
-			// if processed == "error" {
-			// 	return
-			// }
 			Strarray = append(Strarray, processed)
 			Line = ""
 			continue
@@ -45,9 +42,9 @@ func Runner() {
 	}
 	Line = ""
 	for index, va := range Strarray {
-		if index != len(Strarray)-1{
+		if index != len(Strarray)-1 {
 			Line += strings.TrimSpace(va) + "\n"
-		}else {
+		} else {
 			Line += strings.TrimSpace(va)
 		}
 	}

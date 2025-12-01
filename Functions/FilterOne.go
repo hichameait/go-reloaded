@@ -87,7 +87,9 @@ func FilterOne(NewStr []string) []string {
 			}
 			i += count - 1
 		}
+		
 	}
+	
 
 	var LastArray []string
 	for _, va := range NewStr {
