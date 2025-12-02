@@ -4,9 +4,6 @@ import (
 	"strings"
 )
 
-
-
-
 func check(str string, in int) bool {
 	for i := in; i < len(str); i++ {
 		if str[i] == '(' {
@@ -19,13 +16,15 @@ func check(str string, in int) bool {
 	return false
 }
 
-func Spliter(str string) []string  {
+func Spliter(str string) []string {
 	textcopy := ""
 	var Str []string
 	r := []rune(str)
-	flage := false
-	for i := 0; i < len(r); i++ {
+	i := 0
 
+	flage := false
+	
+	for i = 0; i < len(r); i++ {
 		switch r[i] {
 		case '(':
 			flage = true
@@ -35,13 +34,11 @@ func Spliter(str string) []string  {
 		if flage {
 			if check(str, i) && r[i] == ' ' {
 				if textcopy != "" {
-					// Str = append(Str, textcopy)
 					Str = append(Str, strings.TrimSpace(textcopy))
 					textcopy = ""
 				}
 			}
 		}
-
 		if flage {
 			textcopy += string(r[i])
 			continue
@@ -53,19 +50,23 @@ func Spliter(str string) []string  {
 			textcopy += "\n"
 		}
 
-		if r[i] == ' ' && !flage {
+		if r[i] == ' ' && !flage || i == len(r)-1 {
 			if textcopy != "" {
-				// Str = append(Str, textcopy)
 				Str = append(Str, strings.TrimSpace(textcopy))
 				textcopy = ""
 			}
 		}
 	}
-	
-	if len(textcopy) > 0 {
-		Str = append(Str, strings.TrimSpace(textcopy))
-		textcopy = ""
-	}
+
+	//
+	// if i < len(r) {
+	// 	textcopy += string(r[i])
+	// 	if textcopy != "" {
+	// 		// Str = append(Str, textcopy)
+	// 		Str = append(Str, strings.TrimSpace(textcopy))
+	// 		textcopy = ""
+	// 	}
+	// }
 
 	return Str
 }
