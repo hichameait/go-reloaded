@@ -1,9 +1,12 @@
 package functions
 
 import (
+	// "fmt"
+
 	"regexp"
 	"strings"
 	"unicode"
+	// "unicode"
 )
 
 func CleanSymbols(laststr string) string {

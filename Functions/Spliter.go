@@ -23,7 +23,7 @@ func Spliter(str string) []string {
 	i := 0
 
 	flage := false
-	
+
 	for i = 0; i < len(r); i++ {
 		switch r[i] {
 		case '(':
@@ -67,6 +67,5 @@ func Spliter(str string) []string {
 	// 		textcopy = ""
 	// 	}
 	// }
-
 	return Str
 }

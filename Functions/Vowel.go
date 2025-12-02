@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func spliter(str string) []string {
+func Split(str string) []string {
 	var NewStr []string
 	strs := ""
 	for _, va := range str {
@@ -34,7 +34,7 @@ func Vowel(NewStr []string) string {
 			temp += string(va) + " "
 		}
 	}
-	test := spliter(temp)
+	test := Split(temp)
 	NewStr = test
 	laststr := ""
 
