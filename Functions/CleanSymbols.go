@@ -1,7 +1,6 @@
 package functions
 
 import (
-	// "fmt"
 	"regexp"
 	"strings"
 	"unicode"
@@ -37,63 +36,72 @@ func IsAlpha(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 
-var reMultiSpace = regexp.MustCompile(`[ ]{2,}`)
-
 func CleanQuotes(s string) string {
 	runes := []rune(s)
-	var sb strings.Builder
-	n := len(runes)
+	sb := ""
 	seps := ".!,?;:"
+	ln := len(runes)
 
-	for i := 0; i < n; i++ {
+	for i := 0; i < ln; i++ {
 		r := runes[i]
+
 		if r != '\'' {
-			sb.WriteRune(r)
+			sb += string(r)
 			continue
 		}
-		if i > 0 && i < n-1 && IsAlpha(runes[i-1]) && IsAlpha(runes[i+1]) {
-			sb.WriteRune('\'')
+		if i > 0 && i < ln-1 && IsAlpha(runes[i-1]) && IsAlpha(runes[i+1]) {
+			sb += "'"
 			continue
 		}
+
 		j := i + 1
-		for j < n && runes[j] != '\'' {
-			j++
+		for j < ln {
+			if runes[j] != '\'' {
+				j++
+				continue
+			}
+			if j > i && j < ln-1 && IsAlpha(runes[j-1]) && IsAlpha(runes[j+1]) {
+				j++
+				continue
+			}
+			break
 		}
-		if j == n {
-			sb.WriteRune('\'')
+		if j >= ln || runes[j] != '\'' {
+			sb += "'"
 			continue
 		}
 
 		inner := strings.TrimSpace(string(runes[i+1 : j]))
-		if sb.Len() > 0 && !strings.HasSuffix(sb.String(), " ") {
-			sb.WriteRune(' ')
+
+		if len(sb) > 0 && !strings.HasSuffix(sb, " ") {
+			sb += " "
 		}
-		sb.WriteString("'" + inner + "'")
-		if j+1 < n && runes[j+1] != ' ' && !strings.ContainsRune(seps, runes[j+1]) {
-			sb.WriteRune(' ')
+		sb += "'" + inner + "'"
+
+		if j+1 < ln && runes[j+1] != ' ' && !strings.ContainsRune(seps, runes[j+1]) {
+			sb += " "
 		}
 		i = j
 	}
 
-	str := []rune(reMultiSpace.ReplaceAllString(sb.String(), " "))
+	mts := regexp.MustCompile(`[ ]{2,}`)
+	clean := mts.ReplaceAllString(sb, " ")
 
-	var output strings.Builder
-	inQuote := false
-	for i := 0; i < len(str); i++ {
-		if str[i] == '\'' {
-			inQuote = !inQuote
-			output.WriteRune(str[i])
+	// punct fix
+	out := ""
+	inQ := false
+	rn := []rune(clean)
+	for i := 0; i < len(rn); i++ {
+		if rn[i] == '\'' {
+			inQ = !inQ
+			out += string(rn[i])
 			continue
 		}
-		if !inQuote &&
-			output.Len() != 0 &&
-			str[i] == ' ' &&
-			i+1 < len(str) &&
-			strings.ContainsRune(seps, str[i+1]) {
+		if !inQ && rn[i] == ' ' && i+1 < len(rn) && strings.ContainsRune(seps, rn[i+1]) {
 			continue
 		}
-		output.WriteRune(str[i])
+		out += string(rn[i])
 	}
 
-	return strings.TrimSpace(output.String())
+	return strings.TrimSpace(out)
 }
