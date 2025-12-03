@@ -5,16 +5,18 @@ import (
 )
 
 func check(str string, in int) bool {
-	for i := in; i < len(str); i++ {
-		if str[i] == '(' {
+	r := []rune(str)
+	for i := in; i < len(r); i++ {
+		if r[i] == '(' {
 			return true
 		}
-		if str[i] == ')' {
+		if r[i] == ')' {
 			return false
 		}
 	}
 	return false
 }
+
 
 func Spliter(str string) []string {
 	textcopy := ""

@@ -6,60 +6,14 @@ import (
 	"unicode"
 )
 
-func RemoveFlags(s []string, i int) []string {
-	if i < 0 || i >= len(s) {
-		return s
-	}
-	return append(s[:i], s[i+1:]...)
-}
+func Change(s string) []string {
+	var str []string
 
-// applyToLastWordInParens applies transformation to the last word inside parenthesized content
-// For example: "(test1 test2 test3)" with cap -> "(test1 test2 Test3)"
-func applyToLastWordInParens(value string, transform func(string) string) string {
-	if len(value) > 2 && value[0] == '(' && value[len(value)-1] == ')' {
-		inner := value[1 : len(value)-1]
-		parts := strings.Fields(inner)
-		if len(parts) > 0 {
-			parts[len(parts)-1] = transform(parts[len(parts)-1])
-			return "(" + strings.Join(parts, " ") + ")"
-		}
+	if s[0] == '(' && s[len(s)-1] == ')' {
+		str = Split(s)
 	}
-	return transform(value)
-}
 
-func capitalizeWord(word string) string {
-	r := []rune(word)
-	if len(r) == 0 {
-		return word
-	}
-	index := 0
-	for i := 0; i < len(r); i++ {
-		if unicode.IsLetter(r[i]) || unicode.IsDigit(r[i]) {
-			index = i
-			break
-		}
-	}
-	r[index] = unicode.ToUpper(r[index])
-	for dd := index + 1; dd < len(r); dd++ {
-		r[dd] = unicode.ToLower(r[dd])
-	}
-	return string(r)
-}
-
-func uppercaseWord(word string) string {
-	r := []rune(word)
-	for dd := 0; dd < len(r); dd++ {
-		r[dd] = unicode.ToUpper(r[dd])
-	}
-	return string(r)
-}
-
-func lowercaseWord(word string) string {
-	r := []rune(word)
-	for dd := 0; dd < len(r); dd++ {
-		r[dd] = unicode.ToLower(r[dd])
-	}
-	return string(r)
+	return str
 }
 
 func FilterOne(NewStr []string) []string {
@@ -84,25 +38,84 @@ func FilterOne(NewStr []string) []string {
 			for k := 0; k < count; k++ {
 				switch flag {
 				case "(hex)":
-					// For hex, we don't handle parenthesized groups specially
 					n, err := strconv.ParseInt(value, 16, 64)
 					if err != nil {
 						continue
 					}
 					value = strconv.Itoa(int(n))
 				case "(bin)":
-					// For bin, we don't handle parenthesized groups specially
 					n, err := strconv.ParseInt(value, 2, 64)
 					if err != nil {
 						continue
 					}
 					value = strconv.Itoa(int(n))
 				case "(cap)":
-					value = applyToLastWordInParens(value, capitalizeWord)
+					runes := []rune(value)
+					part1 := ""
+					part2 := value
+					if len(runes) > 1 && runes[0] == '(' && runes[len(runes)-1] == ')' {
+						inner := string(runes[1 : len(runes)-1])
+						words := strings.Fields(inner)
+						if len(words) > 1 {
+							part1 = "(" + strings.Join(words[:len(words)-1], " ") + " "
+							part2 = words[len(words)-1] + ")"
+						}
+					}
+					r := []rune(part2)
+					if len(r) > 0 {
+						index := -1
+						for i := 0; i < len(r); i++ {
+							if unicode.IsLetter(r[i]) || unicode.IsDigit(r[i]) {
+								index = i
+								break
+							}
+						}
+						if index != -1 {
+							r[index] = unicode.ToUpper(r[index])
+							for i := index + 1; i < len(r); i++ {
+								r[i] = unicode.ToLower(r[i])
+							}
+						}
+					}
+					value = part1 + string(r)
+
 				case "(up)":
-					value = applyToLastWordInParens(value, uppercaseWord)
+					runes := []rune(value)
+					part1 := ""
+					part2 := value
+					if len(runes) > 1 && runes[0] == '(' && runes[len(runes)-1] == ')' {
+						inner := string(runes[1 : len(runes)-1])
+						words := strings.Fields(inner)
+						if len(words) > 1 {
+							part1 = "(" + strings.Join(words[:len(words)-1], " ") + " "
+							part2 = words[len(words)-1] + ")"
+						}
+					}
+					r := []rune(part2)
+					for i := 0; i < len(r); i++ {
+						r[i] = unicode.ToUpper(r[i])
+					}
+					value = part1 + string(r)
 				case "(low)":
-					value = applyToLastWordInParens(value, lowercaseWord)
+					runes := []rune(value)
+					part1 := ""
+					part2 := value
+					if len(runes) > 1 && runes[0] == '(' && runes[len(runes)-1] == ')' && strings.Contains(value, " ") {
+						inner := string(runes[1 : len(runes)-1])
+						words := strings.Fields(inner)
+
+						if len(words) > 1 {
+							part1 = "(" + strings.Join(words[:len(words)-1], " ") + " "
+							part2 = words[len(words)-1] + ")"
+						}
+					}
+					r := []rune(part2)
+					for i := 0; i < len(r); i++ {
+						r[i] = unicode.ToLower(r[i])
+					}
+
+					value = part1 + string(r)
+
 				}
 			}
 			NewStr[j] = value
@@ -111,12 +124,15 @@ func FilterOne(NewStr []string) []string {
 			}
 			i += count - 1
 		}
+
 	}
 
 	var LastArray []string
 	for _, va := range NewStr {
 		if len(va) != 0 && va != " " {
 			LastArray = append(LastArray, strings.Trim(va, " "))
+		} else {
+			continue
 		}
 	}
 	return LastArray
